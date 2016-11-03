@@ -93,6 +93,7 @@ article img {
     width: 150px;
     height: 150px;
     overflow: hidden;
+    border-radius:25px;
 }
 
 #preview {
@@ -104,5 +105,6 @@ article img {
 #frame {
     position: absolute;
     z-index: 99;
-    border-color: #eeddcc;
+    /*border-color: #eeddcc;*/
+    border: none;
 }

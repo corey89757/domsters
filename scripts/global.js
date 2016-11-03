@@ -105,11 +105,11 @@ function prepareSlideshow() {
     var slideshow = document.createElement("div");
     slideshow.setAttribute("id", "slideshow");
 
-    var frame = document.createElement("img");
-    frame.setAttribute("src", "images/frame.gif");
-    frame.setAttribute("alt", "");
-    frame.setAttribute("id", "frame");
-    slideshow.appendChild(frame);
+    // var frame = document.createElement("img");
+    // frame.setAttribute("src", "images/frame.gif");
+    // frame.setAttribute("alt", "");
+    // frame.setAttribute("id", "frame");
+    // slideshow.appendChild(frame);
 
     var preview = document.createElement("img");
     preview.setAttribute("src", "images/slideshow.gif");
