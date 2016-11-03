@@ -93,7 +93,7 @@ article img {
     width: 150px;
     height: 150px;
     overflow: hidden;
-    border-radius:10px;
+    border-radius: 10px;
 }
 
 #preview {
@@ -107,4 +107,8 @@ article img {
     z-index: 99;
     /*border-color: #eeddcc;*/
     border: none;
+}
+
+#imagegallery li {
+    display: inline;
 }
