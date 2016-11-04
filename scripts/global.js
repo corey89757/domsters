@@ -228,8 +228,76 @@ function prepareGallery() {
     }
 }
 
+function stripeTables() {
+    if (!document.getElementsByTagName) return false;
+    var tables = document.getElementsByTagName("table");
+    for (var i = 0; i < tables.length; i++) {
+        var rows = tables[i].getElementsByTagName("tr");
+        for (var j = 0; j < rows.length; j += 2) {
+            addClass(rows[j], "odd");
+        }
+    }
+}
+
+function highlightRows() {
+    if (!document.getElementsByTagName) return false;
+    var rows = document.getElementsByTagName("tr");
+    for (var i = 0; i < rows.length; i++) {
+        rows[i].oldClassName = rows[i].className;
+        rows[i].onmouseover = function () {
+            addClass(this, "highlight");
+        }
+        rows[i].onmouseout = function () {
+            this.className = this.oldClassName;
+        }
+    }
+}
+
+function displayAbbreviations() {
+    if (!document.getElementsByTagName || !document.createElement || !document.createTextNode) return false;
+    var abbreviations = document.getElementsByTagName("abbr");
+
+    var defs = new Array();
+    for (var i = 0; i < abbreviations.length; i++) {
+        var curAbbr = abbreviations[i];
+        var def = curAbbr.getAttribute("title");
+        var key = curAbbr.lastChild.nodeValue;
+        defs[key] = def;
+    }
+
+    var dlist = document.createElement("dl");
+    for (var key in defs) {
+        var def = defs[key];
+        var dtitle = document.createElement("dt");
+        var dtitle_text = document.createTextNode(key);
+        dtitle.appendChild(dtitle_text);
+
+        var ddesc = document.createElement("dd");
+        var ddesc_text = document.createTextNode(def);
+        ddesc.appendChild(ddesc_text);
+
+        dlist.appendChild(dtitle);
+        dlist.appendChild(ddesc);
+    }
+
+    if (dlist.childNodes.length < 1) return false;
+    var header = document.createElement("h3");
+    var header_text = document.createTextNode("Abbreviations");
+    header.appendChild(header_text);
+
+    var articles = document.getElementsByTagName("article");
+    if (articles.length == 0) return false;
+    var container = articles[0];
+    container.appendChild(header);
+    container.appendChild(dlist);
+}
+
+
 addLoadEvent(highlightPage);
 addLoadEvent(prepareSlideshow);
 addLoadEvent(prepareInternalnav);
 addLoadEvent(preparePlaceholder);
 addLoadEvent(prepareGallery);
+addLoadEvent(stripeTables);
+addLoadEvent(highlightRows);
+addLoadEvent(displayAbbreviations);
