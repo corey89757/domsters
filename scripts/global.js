@@ -292,6 +292,128 @@ function displayAbbreviations() {
     container.appendChild(dlist);
 }
 
+function focusLabels() {
+    if (!document.getElementsByTagName) return false;
+    var labels = document.getElementsByTagName("label");
+    for (var i = 0; i < labels.length; i++) {
+        if (!labels[i].getAttribute("for")) return false;
+        labels[i].onclick = function () {
+            var id = this.getAttribute("for");
+            if (!document.getElementById(id)) return false;
+            var input = document.getElementById(id);
+            input.focus();
+        };
+        /*labels[i].onmouseover = function () {
+         var id = this.getAttribute("for");
+         if (!document.getElementById(id)) return false;
+         var input = document.getElementById(id);
+         input.focus();
+         }*/
+    }
+}
+
+function isFilled(field) {
+    if (field.value.replace(' ', '').length == 0) return false;
+    var placeholder = field.placeholder || field.getAttribute("placeholder");
+    return (field.value != placeholder);
+}
+
+function isEmail(field) {
+    return (field.value.indexOf("@") != -1 && field.value.indexOf(".") != -1);
+}
+
+function validateForm(whichform) {
+    for (var i = 0; i < whichform.elements.length; i++) {
+        var element = whichform.elements[i];
+        if (element.required == 'required') {
+            if (!isFilled(element)) {
+                alert("place fill in the " + element.name + " field.");
+                return false;
+            }
+        }
+        if (element.type == 'email') {
+            if (!isEmail(element)) {
+                alert("the " + element.name + " field must be a valid email address.");
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+function prepareForms() {
+    for (var i = 0; i < document.forms.length; i++) {
+        var thisform = document.forms[i];
+        thisform.onsubmit = function () {
+            if (!validateForm(this)) return false;
+            var article = document.getElementsByTagName("article")[0];
+            if (submitFormWithAjax(thisform, article)) return false;
+            return true;
+        }
+    }
+}
+
+function getHTTPObject() {
+    if (typeof XMLHttpRequest == "undefined") {
+        XMLHttpRequest = function () {
+            try {
+                return new ActiveXObject("Msxml2.XMLHTTP.6.0");
+            } catch (e) {
+            }
+            try {
+                return new ActiveXObject("Msxml2.XMLHTTP.3.0");
+            } catch (e) {
+            }
+            try {
+                return new ActiveXObject("Msxml2.XMLHTTP")
+            } catch (e) {
+            }
+        }
+    }
+    return new XMLHttpRequest();
+}
+
+function displayAjaxLoading(element) {
+    while (element.hasChildNodes()) {
+        element.removeChild(element.lastChild);
+    }
+    var content = document.createElement("img");
+    content.setAttribute("src", "images/loading.gif");
+    content.setAttribute("alt", "loading...");
+    element.appendChild(content);
+}
+
+function submitFormWithAjax(whichform, thetarget) {
+    var request = getHTTPObject();
+    if (!request) return false;
+    displayAjaxLoading(thetarget)
+    var dataParts = [];
+    var element;
+    for (var i = 0; i < whichform.elements.length; i++) {
+        element = whichform.elements[i];
+        dataParts[i] = element.name + '=' + encodeURIComponent(element.value);
+    }
+    var data = dataParts.join("&");
+    request.open('POST', whichform.getAttribute("action"), true);
+    request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    request.onreadystatechange = function () {
+        if (request.readyState == 4) {
+            if (request.status == 200 || request.status == 0) {
+                var matches = request.responseText.match(/<article>([\s\S]+)<\/article>/);
+                if (matches.length > 0) {
+                    thetarget.innerHTML = matches[1];
+                } else {
+                    thetarget.innerHTML = '<p>Oops, there was an error. Sorry</p>';
+                }
+            } else {
+                thetarget.innerHTML = '<p>' + request.statusText + '</p>';
+            }
+        }
+    };
+    request.send(data);
+    return true;
+};
+
 
 addLoadEvent(highlightPage);
 addLoadEvent(prepareSlideshow);
@@ -301,3 +423,5 @@ addLoadEvent(prepareGallery);
 addLoadEvent(stripeTables);
 addLoadEvent(highlightRows);
 addLoadEvent(displayAbbreviations);
+addLoadEvent(focusLabels);
+addLoadEvent(prepareForms);
